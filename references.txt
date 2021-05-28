@@ -1,0 +1,38 @@
+PAPERS TO READ:
+~~~~~~~~~~~~~~
+
+Style Tokens: Unsupervised Style Modeling, Control and Transfer in End-to-End Speech Synthesis : https://arxiv.org/pdf/1803.09017.pdf
+TACOTRON: TOWARDS END-TO-END SPEECH SYNTHESIS : https://arxiv.org/pdf/1703.10135.pdf
+NATURAL TTS SYNTHESIS BY CONDITIONING WAVENET ON MEL SPECTROGRAM PREDICTIONS : https://arxiv.org/pdf/1712.05884.pdf
+How do Voices from Past Speech Synthesis Challenges Compare Today? : https://arxiv.org/pdf/2105.02373.pdf
+Non-intrusive Quality Assessment of Synthesized Speech using Spectral Features and Support Vector Regression : https://www.isca-speech.org/archive/SSW_2016/pdfs/ssw9_PS2-1_Soni.pdf
+Towards Signal-Based Instrumental Quality Diagnosis for Text-to-Speech Systems : https://musaelab.ca/pdfs/J7.pdf
+HIGH FIDELITY SPEECH SYNTHESIS WITH ADVERSARIAL NETWORKS : https://arxiv.org/pdf/1909.11646.pdf (https://github.com/mbinkowski/DeepSpeechDistances)
+Classification of methods used for assessment of text-to-speech systems according to the demands placed on the listener : file:///home/sambit/Downloads/1-s2.0-016763939400047E-main.pdf
+Speech Synthesis Evaluation — State-of-the-Art Assessment and Suggestion for a Novel Research Program : https://pub.uni-bielefeld.de/download/2936378/2936379/SSW2019_evaluation-4.pdf
+Automatic Evaluation of Synthesized Speech  : file:///home/sambit/Downloads/05196099.pdf
+Measuring a decade of progress in Text-to-Speech : https://pdfs.semanticscholar.org/ab4e/81c3a01417a725a3ec5b37b4691031b7f6a7.pdf
+Automated Assessment of Prosody Production : https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2753987/#FN3
+GENERATING DIVERSE AND NATURAL TEXT-TO-SPEECH SAMPLES USING A QUANTIZED FINE-GRAINED VAE AND AUTOREGRESSIVE PROSODY PRIOR : https://arxiv.org/pdf/2002.03788.pdf
+IMPROVING PROSODY WITH LINGUISTIC AND BERT DERIVED FEATURES IN MULTI-SPEAKER BASED MANDARIN CHINESE NEURAL TTS : file:///home/sambit/Downloads/09054337.pdf
+Mellotron: Multispeaker expressive voice synthesis by conditioning on rhythm, pitch and global style tokens : https://arxiv.org/pdf/1910.11997.pdf
+
+
+
+
+
+GITHUB REPOS TO USE:
+~~~~~~~~~~~~~~~~~~~~
+
+Tacotron with GST : https://nvidia.github.io/OpenSeq2Seq/html/speech-synthesis/tacotron-2-gst.html
+					https://github.com/NVIDIA/OpenSeq2Seq
+
+
+DATASET: Blizzard Challenge 2016 [5 hours of British English speech-text data in from a single female talker]
+		 (https://www.cstr.ed.ac.uk/projects/blizzard/data.html) (http://data.cstr.ed.ac.uk/blizzard/wavs_and_scores/blizzard_wavs_and_scores_2016_release_version_1.tar.bz2)
+
+
+For testing?
+https://keithito.com/LJ-Speech-Dataset/
+
+Use this for reference to other systems: https://github.com/mozilla/TTS
