@@ -16,7 +16,7 @@ Automated Assessment of Prosody Production : https://www.ncbi.nlm.nih.gov/pmc/ar
 GENERATING DIVERSE AND NATURAL TEXT-TO-SPEECH SAMPLES USING A QUANTIZED FINE-GRAINED VAE AND AUTOREGRESSIVE PROSODY PRIOR : https://arxiv.org/pdf/2002.03788.pdf
 IMPROVING PROSODY WITH LINGUISTIC AND BERT DERIVED FEATURES IN MULTI-SPEAKER BASED MANDARIN CHINESE NEURAL TTS : file:///home/sambit/Downloads/09054337.pdf
 Mellotron: Multispeaker expressive voice synthesis by conditioning on rhythm, pitch and global style tokens : https://arxiv.org/pdf/1910.11997.pdf
-
+Text-based emotion detection: Advances, challenges, and opportunities : https://onlinelibrary.wiley.com/doi/full/10.1002/eng2.12189
 
 
 
@@ -36,3 +36,15 @@ For testing?
 https://keithito.com/LJ-Speech-Dataset/
 
 Use this for reference to other systems: https://github.com/mozilla/TTS
+
+
+
+
+DATASETS:
+~~~~~~~~~
+
+https://github.com/JULIELab/EmoBank/tree/master/corpus
+http://saifmohammad.com/WebPages/EmotionIntensity-SharedTask.html
+http://people.rc.rit.edu/~coagla/affectdata/index.html
+http://yanran.li/dailydialog.html
+https://github.com/declare-lab/MELD
