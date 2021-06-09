@@ -52,7 +52,12 @@ def get_sentence_pairs(dataset, tokenizer):
     inputs = []
     attention_masks = []
     labels = []
-    for i in dataset:
+
+    #######################################
+    max_steps = min(len(dataset), 3000)  ####
+    #######################################
+    
+    for i in dataset[:max_steps]:
         enc_s = tokenizer.encode_plus(text=i[0], 
                                       text_pair=i[1], 
                                       add_special_tokens = True, 
@@ -80,7 +85,7 @@ train_dataset = get_sentence_pairs(train_data, tokenizer)
 val_dataset = get_sentence_pairs(val_data, tokenizer)
 
 
-BATCH_SIZE = 4
+BATCH_SIZE = 2
 
 train_dataloader = DataLoader(
         train_dataset,  # The training samples.
@@ -141,6 +146,15 @@ def flat_accuracy(preds, labels):
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 
+def save_model_checkpoint(model, optimizer, epoch, loss):
+	PATH = "../model/emobert-"+str(epoch)+".pt"
+	torch.save({
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': loss,
+            }, PATH)
+
 
 for epoch_i in range(0, epochs):
     print("")
@@ -155,7 +169,7 @@ for epoch_i in range(0, epochs):
     for step, batch in enumerate(train_dataloader):
 
         # Progress update every 1000 batches.
-        if step % 1000 == 0 and not step == 0:
+        if step % 100 == 0 and not step == 0:
             # Calculate elapsed time in minutes.
             elapsed = time.time() - t0
             
@@ -164,7 +178,7 @@ for epoch_i in range(0, epochs):
 
         b_input_ids = batch[0].to(device)
         b_input_mask = batch[1].to(device)
-        b_labels = torch.tensor(batch[2], dtype=torch.long).to(device)
+        b_labels = batch[2].to(device)
 
         model.zero_grad()        
         outputs = model(b_input_ids, b_input_mask)
@@ -205,7 +219,7 @@ for epoch_i in range(0, epochs):
         
         b_input_ids = batch[0].to(device)
         b_input_mask = batch[1].to(device)
-        b_labels = torch.tensor(batch[2], dtype=torch.long).to(device)
+        b_labels = batch[2].to(device)
         
         with torch.no_grad():        
             outputs = model(b_input_ids, b_input_mask,)
@@ -232,3 +246,5 @@ for epoch_i in range(0, epochs):
     
     print("  Validation Loss: {0:.2f}".format(avg_val_loss))
     print("  Validation took: {:}".format(validation_time))
+
+    save_model_checkpoint(model, optimizer, epoch_i, avg_train_loss)
