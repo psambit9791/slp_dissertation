@@ -21,7 +21,10 @@ from transformers import get_linear_schedule_with_warmup
 
 import time
 import datetime
+import os
 
+
+ROOT = "../"
 
 device = None
 if torch.cuda.is_available():
@@ -34,16 +37,21 @@ else:
 
 torch.cuda.empty_cache()
 
+def create_model_dir():
+	folder = str(int(datetime.datetime.now().timestamp()))
+	os.mkdir(ROOT+"model/"+folder)
+	return folder
+
 
 def load_from_pkl(mode, dataset):
     data = None
-    with open("../data/daily_dialog/pkl/"+mode+"_"+dataset+".pkl", "rb") as f:
+    with open(ROOT+"data/daily_dialog/pkl/"+mode+"_"+dataset+".pkl", "rb") as f:
         data = pickle.load(f)
     return data
 
 def load_from_sent(mode, dataset):
     data = None
-    with open("../data/daily_dialog/sent/"+mode+"_"+dataset+".pkl", "rb") as f:
+    with open(ROOT+"data/daily_dialog/sent/"+mode+"_"+dataset+".pkl", "rb") as f:
         data = pickle.load(f)
     return data
 
@@ -54,7 +62,7 @@ def get_sentence_pairs(dataset, tokenizer):
     labels = []
 
     #######################################
-    max_steps = min(len(dataset), 3000)  ####
+    max_steps = min(len(dataset), 100)  ####
     #######################################
     
     for i in dataset[:max_steps]:
@@ -146,8 +154,8 @@ def flat_accuracy(preds, labels):
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 
-def save_model_checkpoint(model, optimizer, epoch, loss):
-	PATH = "../model/emobert-"+str(epoch)+".pt"
+def save_model_checkpoint(folder, model, optimizer, epoch, loss):
+	PATH = ROOT+"model/"+folder+"/emobert-"+str(epoch)+".pt"
 	torch.save({
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
@@ -155,6 +163,8 @@ def save_model_checkpoint(model, optimizer, epoch, loss):
             'loss': loss,
             }, PATH)
 
+
+model_folder = create_model_dir()
 
 for epoch_i in range(0, epochs):
     print("")
@@ -247,4 +257,4 @@ for epoch_i in range(0, epochs):
     print("  Validation Loss: {0:.2f}".format(avg_val_loss))
     print("  Validation took: {:}".format(validation_time))
 
-    save_model_checkpoint(model, optimizer, epoch_i, avg_train_loss)
+    save_model_checkpoint(model_folder, model, optimizer, epoch_i, avg_train_loss)
