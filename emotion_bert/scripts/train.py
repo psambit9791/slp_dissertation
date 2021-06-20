@@ -22,7 +22,23 @@ from transformers import get_linear_schedule_with_warmup
 import time
 import datetime
 import os
+import argparse
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--stage", help="is this operating in debug mode")
+parser.add_argument("--epoch", help="how many eopchs should this run for", type=int, default=5)
+parser.add_argument("--batch", help="what is the batch size", type=int, default=2)
+
+args = parser.parse_args()
+
+if args.stage == "debug":
+	train_set = 100
+else:
+	train_set = 10000000
+
+epochs = args.epoch
+BATCH_SIZE = args.batch
 
 ROOT = "../"
 
@@ -57,12 +73,13 @@ def load_from_sent(mode, dataset):
 
 def get_sentence_pairs(dataset, tokenizer):
     global device
+    global train_set
     inputs = []
     attention_masks = []
     labels = []
 
     #######################################
-    max_steps = min(len(dataset), 100)  ####
+    max_steps = min(len(dataset), train_set)
     #######################################
     
     for i in dataset[:max_steps]:
@@ -92,8 +109,6 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=Tru
 train_dataset = get_sentence_pairs(train_data, tokenizer)
 val_dataset = get_sentence_pairs(val_data, tokenizer)
 
-
-BATCH_SIZE = 2
 
 train_dataloader = DataLoader(
         train_dataset,  # The training samples.
@@ -126,8 +141,6 @@ class EmotionBERTModel(nn.Module):
 model = EmotionBERTModel()
 model.to(device)
 
-### Setting up hyperparameters
-epochs = 5
 
 criterion = nn.CrossEntropyLoss() ## If required define your own criterion
 optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()))
