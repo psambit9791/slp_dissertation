@@ -6,10 +6,9 @@ import pandas as pd
 
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 import torch.nn.functional as F
 
-from transformers import BertTokenizer, BertForSequenceClassification
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.preprocessing import OneHotEncoder
 
@@ -17,6 +16,12 @@ from datasets import load_dataset
 
 from transformers import BertModel
 from transformers import get_linear_schedule_with_warmup
+from transformers import BertTokenizer, BertForSequenceClassification
+
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import classification_report
 
 
 import time
@@ -33,7 +38,7 @@ parser.add_argument("--batch", help="what is the batch size", type=int, default=
 args = parser.parse_args()
 
 if args.stage == "debug":
-	train_set = 100
+	train_set = 500
 else:
 	train_set = 10000000
 
@@ -54,24 +59,24 @@ else:
 torch.cuda.empty_cache()
 
 def create_model_dir():
-	folder = str(int(datetime.datetime.now().timestamp()))
+	folder = str(int(datetime.datetime.now().timestamp())) + "_imdb"
 	os.mkdir(ROOT+"model/"+folder)
 	return folder
 
 
 def load_from_pkl(mode, dataset):
     data = None
-    with open(ROOT+"data/daily_dialog/pkl/"+mode+"_"+dataset+".pkl", "rb") as f:
+    with open(ROOT+"data/imdb/pkl/"+mode+"_"+dataset+".pkl", "rb") as f:
         data = pickle.load(f)
     return data
 
 def load_from_sent(mode, dataset):
     data = None
-    with open(ROOT+"data/daily_dialog/sent/"+mode+"_"+dataset+".pkl", "rb") as f:
+    with open(ROOT+"data/imdb/sent/"+mode+"_"+dataset+".pkl", "rb") as f:
         data = pickle.load(f)
     return data
 
-def get_sentence_pairs(dataset, tokenizer):
+def get_sentence_pairs(dataset, tokenizer, which_set):
     global device
     global train_set
     inputs = []
@@ -79,12 +84,15 @@ def get_sentence_pairs(dataset, tokenizer):
     labels = []
 
     #######################################
-    max_steps = min(len(dataset), train_set)
+    if which_set == "train":
+        max_steps = min(len(dataset), train_set)
+    else:
+        max_steps = len(dataset)
     #######################################
     
     for i in dataset[:max_steps]:
+
         enc_s = tokenizer.encode_plus(text=i[0], 
-                                      text_pair=i[1], 
                                       add_special_tokens = True, 
                                       padding = 'max_length',
                                       truncation="only_first", 
@@ -93,7 +101,7 @@ def get_sentence_pairs(dataset, tokenizer):
                                       return_tensors = 'pt')
         inputs.append(enc_s["input_ids"])
         attention_masks.append(enc_s["attention_mask"])
-        labels.append(i[2])
+        labels.append(float(i[1]))
     
     inputs = torch.cat(inputs, dim=0)
     attention_masks = torch.cat(attention_masks, dim=0)
@@ -104,6 +112,9 @@ def get_sentence_pairs(dataset, tokenizer):
 train_data = load_from_sent("train", "emo")
 val_data = load_from_sent("val", "emo")
 test_data = load_from_sent("test", "emo")
+
+real_labels = np.array(val_data)[:, 1].astype(float)
+
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 train_dataset = get_sentence_pairs(train_data, tokenizer)
@@ -118,7 +129,7 @@ train_dataloader = DataLoader(
 
 validation_dataloader = DataLoader(
         val_dataset, # The validation samples.
-        sampler = RandomSampler(val_dataset), # Pull out batches randomly.
+        sampler = SequentialSampler(val_dataset), # Pull out batches sequentially.
         batch_size = BATCH_SIZE # Evaluates with this batch size.
     )
 
@@ -128,13 +139,19 @@ class EmotionBERTModel(nn.Module):
     def __init__(self):
         super(EmotionBERTModel, self).__init__()
         self.bert = BertModel.from_pretrained('bert-base-uncased')
-        self.linear1 = nn.Linear(768, 256)
-        self.final = nn.Linear(256, 7)
+        # self.linear1 = nn.Linear(768, 256)
+        self.sigmoid = nn.Sigmoid()
+        self.dropout = nn.Dropout(0.1)
+        self.final = nn.Linear(768, 1)
     
     def forward(self, ids, mask):
-        sequence_output, pooled_output = self.bert(ids, attention_mask=mask, return_dict=False)
-        output = F.relu(self.linear1(sequence_output[:,0,:].view(-1,768))) ## extract the 1st token's embeddings
-        output = self.final(output)
+        _, pooled_output = self.bert(ids, attention_mask=mask, return_dict=False)
+        output = self.final(self.dropout(pooled_output))
+        output = self.sigmoid(output)
+
+
+        # output = self.final(sequence_output[:,0,:].view(-1,768)) ## extract the 1st token's embeddings
+        # output = self.final(output)
         return output
 
 
@@ -142,8 +159,8 @@ model = EmotionBERTModel()
 model.to(device)
 
 
-criterion = nn.CrossEntropyLoss() ## If required define your own criterion
-optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()))
+criterion = nn.BCELoss() ## If required define your own criterion
+optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=2e-7)
 # Create the learning rate scheduler.
 total_steps = len(train_dataloader) * epochs
 scheduler = get_linear_schedule_with_warmup(optimizer, 
@@ -162,8 +179,9 @@ torch.backends.cudnn.deterministic = True
 
 
 def flat_accuracy(preds, labels):
-    pred_flat = np.argmax(preds, axis=1).flatten()
+    pred_flat = (preds > 0.5).astype(float)
     labels_flat = labels.flatten()
+
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 
@@ -204,9 +222,9 @@ for epoch_i in range(0, epochs):
         b_labels = batch[2].to(device)
 
         model.zero_grad()        
-        outputs = model(b_input_ids, b_input_mask)
+        output = model(b_input_ids, b_input_mask)
         
-        loss = criterion(outputs, b_labels)
+        loss = criterion(output, b_labels)
         total_train_loss += loss
         
         loss.backward()
@@ -224,7 +242,7 @@ for epoch_i in range(0, epochs):
     
     print("")
     print("  Average training loss: {0:.2f}".format(avg_train_loss))
-    print("  Training epcoh took: {:}".format(training_time))
+    print("  Training epoch took: {:}".format(training_time))
     
     print("")
     print("Running Validation...")
@@ -237,15 +255,18 @@ for epoch_i in range(0, epochs):
     total_eval_loss = 0
     nb_eval_steps = 0
 
+    predicted = []
+
     # Evaluate data for one epoch
     for batch in validation_dataloader:
         
         b_input_ids = batch[0].to(device)
         b_input_mask = batch[1].to(device)
         b_labels = batch[2].to(device)
-        
+
+
         with torch.no_grad():        
-            outputs = model(b_input_ids, b_input_mask,)
+            outputs = model(b_input_ids, b_input_mask)
         
             loss = criterion(outputs, b_labels)
         
@@ -254,11 +275,14 @@ for epoch_i in range(0, epochs):
         
         # Calculate the accuracy for this batch of test sentences, and
         # accumulate it over all batches.
-        total_eval_accuracy += flat_accuracy(outputs.to('cpu').numpy(), b_labels.to('cpu').numpy())
+        # total_eval_accuracy += flat_accuracy(outputs.to('cpu').numpy(), b_labels.to('cpu').numpy())
+
+        predicted.append(outputs.to('cpu').numpy())
+
         
 
     # Report the final accuracy for this validation run.
-    avg_val_accuracy = total_eval_accuracy / len(validation_dataloader)
+    avg_val_accuracy = flat_accuracy(np.array(predicted).flatten(), real_labels)
     print("  Accuracy: {0:.2f}".format(avg_val_accuracy))
 
     # Calculate the average loss over all of the batches.

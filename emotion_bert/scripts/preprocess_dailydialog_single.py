@@ -27,7 +27,7 @@ else:
 
 
 def load_csv(mode):
-    df = pd.read_csv(ROOT+"data/daily_dialog/csv/"+mode+".csv")
+    df = pd.read_csv(ROOT+"data/daily_dialog_single/csv/"+mode+".csv")
     return df
 
 # Get the dialog from the generated dataframe
@@ -39,11 +39,11 @@ def get_cell(df, row, column_name):
 ### Save tokenised data
 
 def save_to_pkl(data, mode, dataset="emo"):
-    with open(ROOT+"data/daily_dialog/pkl/"+mode+"_"+dataset+".pkl", "wb") as f:
+    with open(ROOT+"data/daily_dialog_single/pkl/"+mode+"_"+dataset+".pkl", "wb") as f:
         pickle.dump(data, f)
 
 def save_to_sent(data, mode, dataset="emo"):
-    with open(ROOT+"data/daily_dialog/sent/"+mode+"_"+dataset+".pkl", "wb") as f:
+    with open(ROOT+"data/daily_dialog_single/sent/"+mode+"_"+dataset+".pkl", "wb") as f:
         pickle.dump(data, f)
 
 
@@ -69,7 +69,7 @@ def split_data_into_lists(mode):
             rows.append([dialogs[idx-1], dialogs[idx], acts[idx], emotions[idx]])
             
     df = pd.DataFrame(data=rows, columns=['previous_dialog', 'current_dialog', 'act', 'emotion'])
-    df.to_csv(ROOT+"data/daily_dialog/csv/"+mode+".csv", index=False)
+    df.to_csv(ROOT+"data/daily_dialog_single/csv/"+mode+".csv", index=False)
 
 ### UNCOMMENT IF THE DATA SPLITTING PROCESS IS CHANGED
 split_data_into_lists("test")
@@ -86,7 +86,7 @@ def get_unprocessed_row(df, row, mode="emo"):
     global  max_previous_length
     global max_current_length
     
-    sentence_p = get_cell(df, row, "previous_dialog")
+    # sentence_p = get_cell(df, row, "previous_dialog")
     sentence_c = get_cell(df, row, "current_dialog")
     
     label = None
@@ -96,7 +96,7 @@ def get_unprocessed_row(df, row, mode="emo"):
     else:
         label = get_cell(df, row, "emotion")
     
-    return sentence_p, sentence_c, label
+    return sentence_c, label
 
 # Emo data
 
