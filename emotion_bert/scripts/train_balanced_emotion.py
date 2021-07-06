@@ -10,7 +10,7 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 import torch.nn.functional as F
 
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
 from sklearn.preprocessing import OneHotEncoder
 
 from datasets import load_dataset
@@ -63,16 +63,12 @@ else:
 torch.cuda.empty_cache()
 
 def create_model_dir():
-    folder = str(int(datetime.datetime.now().timestamp())) + "_imdb"
+    folder = str(int(datetime.datetime.now().timestamp())) + "_balanced_emotion"
     os.mkdir(ROOT+"model/"+folder)
     return folder
 
 
-raw_datasets = load_dataset("imdb")
-temp = raw_datasets["test"].train_test_split(test_size=0.5)
-raw_datasets["test"] = temp["test"]
-raw_datasets["validation"] = temp["train"]
-del raw_datasets["unsupervised"]
+raw_datasets = load_dataset("./balanced_emotion.py")
 
 tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 
@@ -80,7 +76,6 @@ def tokenize_function(examples):
     global tokenizer
     return tokenizer(examples["text"], padding="max_length", truncation=True)
 
-        
 
 tokenized_datasets = raw_datasets.map(tokenize_function, batched=True)
 
@@ -124,7 +119,7 @@ def save_model_checkpoint(folder, model, optimizer, epoch, tr_loss, val_loss):
 train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=BATCH_SIZE)
 eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE)
 
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=2)
+model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=7)
 model.to(device)
 optimizer = AdamW(model.parameters(), lr=3e-6)
 
@@ -165,6 +160,7 @@ for epoch in range(num_epochs):
     avg_train_loss = total_train_loss/(len(train_dataloader)*BATCH_SIZE)
     print("Training Loss:", avg_train_loss)
     print("Training Accuracy:", flat_accuracy(predictions, references))
+    # print("Training F1 Score:", f1_score(np.array(predictions).flatten(), np.array(references).flatten(), average="macro"))
 
     # torch.cuda.empty_cache()
 
@@ -184,6 +180,7 @@ for epoch in range(num_epochs):
     avg_val_loss = total_val_loss/(len(eval_dataloader)*BATCH_SIZE)
     print("Validation Loss:", avg_val_loss)
     print("Validation Accuracy:", flat_accuracy(predictions, references))
+    # print("Validation F1 Score:", f1_score(np.array(predictions).flatten(), np.array(references).flatten(), average="macro"))
 
     if args.save:
         save_model_checkpoint(model_folder, model, optimizer, epoch, avg_train_loss, avg_val_loss)
