@@ -3,4 +3,5 @@
 */data
 datasets
 f0_reaper/alignment
+*.lock
 

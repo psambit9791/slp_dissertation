@@ -155,8 +155,8 @@ for epoch in range(num_epochs):
         loss.backward()
 
         logits = outputs.logits
-        predictions.append(torch.argmax(logits, dim=-1).to('cpu').numpy())
-        references.append(batch["labels"].to('cpu').numpy())
+        predictions += torch.argmax(logits, dim=-1).to('cpu').numpy().tolist()
+        references += batch["labels"].to('cpu').numpy().tolist()
 
         optimizer.step()
         lr_scheduler.step()
@@ -178,8 +178,8 @@ for epoch in range(num_epochs):
             outputs = model(**batch)
             total_val_loss += outputs.loss
             logits = outputs.logits
-            predictions.append(torch.argmax(logits, dim=-1).to('cpu').numpy())
-            references.append(batch["labels"].to('cpu').numpy())
+            predictions += torch.argmax(logits, dim=-1).to('cpu').numpy().tolist()
+            references += batch["labels"].to('cpu').numpy().tolist()
 
     avg_val_loss = total_val_loss/(len(eval_dataloader)*BATCH_SIZE)
     print("Validation Loss:", avg_val_loss)

@@ -60,15 +60,10 @@ else:
 torch.cuda.empty_cache()
 
 def get_model_dir():
-	folder = args.model + "_imdb"
+	folder = args.model + "_balanced_emotion"
 	return folder
 
-
-raw_datasets = load_dataset("imdb")
-temp = raw_datasets["test"].train_test_split(test_size=0.5, seed=SEED)
-raw_datasets["test"] = temp["test"]
-raw_datasets["validation"] = temp["train"]
-del raw_datasets["unsupervised"]
+raw_datasets = load_dataset("./balanced_emotion.py")
 
 tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
 
@@ -96,8 +91,8 @@ def flat_accuracy(preds, labels):
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 def get_report(preds, labels):
-    pred_flat = np.array(preds).flatten()
-    labels_flat = np.array(labels).flatten()
+    pred_flat = np.ravel(preds)
+    labels_flat = np.ravel(labels)
     return classification_report(labels_flat, pred_flat)
 
 def load_model_checkpoint(folder, epoch, model, optimizer):
@@ -114,7 +109,7 @@ def load_model_checkpoint(folder, epoch, model, optimizer):
 
 test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=2)
+model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=7)
 optimizer = AdamW(model.parameters(), lr=3e-6)
 model_folder = get_model_dir()
 
