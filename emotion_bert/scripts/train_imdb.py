@@ -74,7 +74,7 @@ raw_datasets["test"] = temp["test"]
 raw_datasets["validation"] = temp["train"]
 del raw_datasets["unsupervised"]
 
-tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def tokenize_function(examples):
     global tokenizer
@@ -88,8 +88,8 @@ train_dataset = None
 eval_dataset = None
 # test_dataset = None
 if args.dataset == "small":
-    train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(100))
-    eval_dataset = tokenized_datasets["validation"].shuffle(seed=42).select(range(100))
+    train_dataset = tokenized_datasets["train"].shuffle(seed=SEED).select(range(100))
+    eval_dataset = tokenized_datasets["validation"].shuffle(seed=SEED).select(range(100))
 else:
     train_dataset = tokenized_datasets["train"]
     eval_dataset = tokenized_datasets["validation"]
@@ -124,7 +124,7 @@ def save_model_checkpoint(folder, model, optimizer, epoch, tr_loss, val_loss):
 train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=BATCH_SIZE)
 eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE)
 
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=2)
+model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
 model.to(device)
 optimizer = AdamW(model.parameters(), lr=3e-6)
 

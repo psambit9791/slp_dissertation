@@ -26,6 +26,9 @@ import os
 import argparse
 from tqdm import tqdm
 
+NUM_LABEL = 7
+dataset = "final_emotion" #Can be: goemotion, balanced_emotion
+
 SEED = 42
 
 random.seed(SEED)
@@ -60,12 +63,12 @@ else:
 torch.cuda.empty_cache()
 
 def get_model_dir():
-	folder = args.model + "_balanced_emotion"
+	folder = args.model + "_" + dataset
 	return folder
 
-raw_datasets = load_dataset("./balanced_emotion.py")
+raw_datasets = load_dataset("./"+dataset+".py")
 
-tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def tokenize_function(examples):
     global tokenizer
@@ -109,7 +112,7 @@ def load_model_checkpoint(folder, epoch, model, optimizer):
 
 test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=7)
+model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", output_hidden_states=True, num_labels=NUM_LABEL)
 optimizer = AdamW(model.parameters(), lr=3e-6)
 model_folder = get_model_dir()
 
@@ -124,6 +127,7 @@ with torch.no_grad():
     for batch in test_dataloader:
         batch = {k: v.to(device) for k, v in batch.items()}
         outputs = model(**batch)
+        # last_hidden_state = outputs.hidden_states[-1][:,0,:]
         total_test_loss += outputs.loss
         logits = outputs.logits
         predictions += torch.argmax(logits, dim=-1).to('cpu').numpy().tolist()

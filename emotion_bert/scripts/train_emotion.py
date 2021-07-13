@@ -28,6 +28,8 @@ from tqdm import tqdm
 
 from distutils import util
 
+NUM_LABEL = 7
+dataset = "final_emotion" #Can be: goemotion, balanced_emotion
 
 SEED = 42
 
@@ -63,14 +65,14 @@ else:
 torch.cuda.empty_cache()
 
 def create_model_dir():
-    folder = str(int(datetime.datetime.now().timestamp())) + "_balanced_emotion"
+    folder = str(int(datetime.datetime.now().timestamp())) + "_" + dataset
     os.mkdir(ROOT+"model/"+folder)
     return folder
 
 
-raw_datasets = load_dataset("./balanced_emotion.py")
+raw_datasets = load_dataset("./" + dataset + ".py")
 
-tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def tokenize_function(examples):
     global tokenizer
@@ -83,8 +85,8 @@ train_dataset = None
 eval_dataset = None
 # test_dataset = None
 if args.dataset == "small":
-    train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(100))
-    eval_dataset = tokenized_datasets["validation"].shuffle(seed=42).select(range(100))
+    train_dataset = tokenized_datasets["train"].shuffle(seed=SEED).select(range(1000))
+    eval_dataset = tokenized_datasets["validation"].shuffle(seed=SEED).select(range(1000))
 else:
     train_dataset = tokenized_datasets["train"]
     eval_dataset = tokenized_datasets["validation"]
@@ -119,7 +121,7 @@ def save_model_checkpoint(folder, model, optimizer, epoch, tr_loss, val_loss):
 train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=BATCH_SIZE)
 eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE)
 
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=7)
+model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=NUM_LABEL)
 model.to(device)
 optimizer = AdamW(model.parameters(), lr=3e-6)
 

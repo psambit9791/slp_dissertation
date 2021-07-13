@@ -25,11 +25,11 @@ emotion_label = {
     3: "sadness",
     4: "surprise",
     5: "fear",
-    6: "disgust"
+    6: "disgust",
 }
 
 
-class BalancedEmotion(datasets.GeneratorBasedBuilder):
+class GoEmotion(datasets.GeneratorBasedBuilder):
     """DailyDialog: A Manually Labelled Multi-turn Dialogue Dataset"""
 
     VERSION = datasets.Version("1.0.0")
@@ -56,8 +56,7 @@ class BalancedEmotion(datasets.GeneratorBasedBuilder):
         # download and extract URLs
         # dl_dir = dl_manager.download_and_extract(_URL)
         dl_dir = "../data"
-        data_dir = os.path.join(dl_dir, "balanced_emotion")
-
+        data_dir = os.path.join(dl_dir, "goemotion")
         # The splits are nested inside the zip
         # for name in ("train", "validation", "test"):
         #     zip_fpath = os.path.join(data_dir, f"{name}.zip")
@@ -99,7 +98,10 @@ class BalancedEmotion(datasets.GeneratorBasedBuilder):
             for i, line_f in enumerate(f):
                 if len(line_f.strip()) == 0:
                     break
-                emotion, dialog = line_f.split(self.__SEP__)
+                try:
+                    emotion, dialog = line_f.split(self.__SEP__)
+                except:
+                    print(line_f)
 
                 yield f"{split}-{i}", {
                     "text": dialog,

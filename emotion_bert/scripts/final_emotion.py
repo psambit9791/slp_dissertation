@@ -29,7 +29,7 @@ emotion_label = {
 }
 
 
-class BalancedEmotion(datasets.GeneratorBasedBuilder):
+class FinalEmotion(datasets.GeneratorBasedBuilder):
     """DailyDialog: A Manually Labelled Multi-turn Dialogue Dataset"""
 
     VERSION = datasets.Version("1.0.0")
@@ -56,7 +56,7 @@ class BalancedEmotion(datasets.GeneratorBasedBuilder):
         # download and extract URLs
         # dl_dir = dl_manager.download_and_extract(_URL)
         dl_dir = "../data"
-        data_dir = os.path.join(dl_dir, "balanced_emotion")
+        data_dir = os.path.join(dl_dir, "final_dataset")
 
         # The splits are nested inside the zip
         # for name in ("train", "validation", "test"):

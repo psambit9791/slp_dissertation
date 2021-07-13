@@ -70,7 +70,7 @@ raw_datasets["test"] = temp["test"]
 raw_datasets["validation"] = temp["train"]
 del raw_datasets["unsupervised"]
 
-tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def tokenize_function(examples):
     global tokenizer
@@ -114,7 +114,7 @@ def load_model_checkpoint(folder, epoch, model, optimizer):
 
 test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=2)
+model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)
 optimizer = AdamW(model.parameters(), lr=3e-6)
 model_folder = get_model_dir()
 
