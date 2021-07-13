@@ -79,8 +79,14 @@ tokenized_datasets = raw_datasets.map(tokenize_function, batched=True)
 test_dataset = None
 if args.dataset == "small":
     test_dataset = tokenized_datasets["test"].shuffle(seed=SEED).select(range(100))
+    eval_dataset = tokenized_datasets["validation"].shuffle(seed=SEED).select(range(1000))
 else:
+    eval_dataset = tokenized_datasets["validation"]
     test_dataset = tokenized_datasets["test"]
+
+eval_dataset = eval_dataset.remove_columns(["text"])
+eval_dataset = eval_dataset.rename_column("label", "labels")
+eval_dataset.set_format("torch")
 
 test_dataset = test_dataset.remove_columns(["text"])
 test_dataset = test_dataset.rename_column("label", "labels")
@@ -110,6 +116,7 @@ def load_model_checkpoint(folder, epoch, model, optimizer):
     return model, optimizer
 
 
+eval_dataloader = DataLoader(eval_dataset, batch_size=BATCH_SIZE)
 test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
 model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", output_hidden_states=True, num_labels=NUM_LABEL)
@@ -118,6 +125,30 @@ model_folder = get_model_dir()
 
 model, optimizer = load_model_checkpoint(model_folder, epoch, model, optimizer)
 model.to(device)
+
+
+predictions = []
+references = []
+total_test_loss = 0
+with torch.no_grad():
+    model.eval()
+    for batch in eval_dataloader:
+        batch = {k: v.to(device) for k, v in batch.items()}
+        outputs = model(**batch)
+        # last_hidden_state = outputs.hidden_states[-1][:,0,:]
+        total_test_loss += outputs.loss
+        logits = outputs.logits
+        predictions += torch.argmax(logits, dim=-1).to('cpu').numpy().tolist()
+        references += batch["labels"].to('cpu').numpy().tolist()
+
+avg_test_loss = total_test_loss/(len(test_dataloader)*BATCH_SIZE)
+print("Validation Loss:", avg_test_loss)
+print("Validation Accuracy:", flat_accuracy(predictions, references))
+
+print("Classification Report:\n\n")
+print(get_report(predictions, references))
+
+print("\n\n")
 
 predictions = []
 references = []
