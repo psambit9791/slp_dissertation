@@ -29,7 +29,7 @@ from tqdm import tqdm
 from distutils import util
 
 NUM_LABEL = 7
-dataset = "final_emotion" #Can be: goemotion, balanced_emotion
+dataset = "balanced_emotion" #Can be: goemotion, balanced_emotion, final_dataset
 
 SEED = 42
 

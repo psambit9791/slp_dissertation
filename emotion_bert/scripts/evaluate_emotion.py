@@ -27,7 +27,7 @@ import argparse
 from tqdm import tqdm
 
 NUM_LABEL = 7
-dataset = "final_emotion" #Can be: goemotion, balanced_emotion
+dataset = "goemotion" #Can be: goemotion, balanced_emotion, final_emotion
 
 SEED = 42
 

@@ -70,13 +70,13 @@ def plot_data_distribution(data_dict, label_var, filename=None, mapper=final_emo
         plt.tight_layout()
         plt.savefig(ROOT+"images/"+filename+".png")
         plt.clf()
-    else:
-        plt.show()
+    # else:
+    #     plt.show()
 
     return counts
 
-mixed_counts = plot_data_distribution(mixed, 'label', 'mixed_init')
-goemo_counts = plot_data_distribution(goemo, 'label', 'goemo_init')
+mixed_counts = plot_data_distribution(mixed, 'label')
+goemo_counts = plot_data_distribution(goemo, 'label')
 # merged_counts = plot_data_distribution(merged, 'label', 'merged_init')
 
 
@@ -141,7 +141,7 @@ def drop_column(data_dict, emo):
 
 label_list = merged_data["train"]["label"].unique()
 # print(merged_data["test"])
-merged_counts = plot_data_distribution(merged_data, 'label', 'merged')
+merged_counts = plot_data_distribution(merged_data, 'label', 'unbalanced_merged')
 
 print("TOTAL SENTENCES AFTER MERGING:\n", merged_counts)
 
@@ -193,10 +193,11 @@ balanced_data["test"] = generate_dataset(test_sent_count, "test")
 
 # balanced_data = drop_column(["fear", "disgust"])
 
-plot_data_distribution(balanced_data, 'label', 'final', final_emo_lbl)
+plot_data_distribution(balanced_data, 'label', 'balanced_final', final_emo_lbl)
 
 for k in split_keys:
     balanced_data[k] = balanced_data[k].sample(frac=1, random_state=SEED).reset_index(drop=True)
+    balanced_data[k] = balanced_data[k][['label', 'text']]
     balanced_data[k].to_csv(ROOT+"data/final_dataset/"+k+'.txt', index=False, header=False, sep="\t")
 
 print("~~~~ GENERATED BALANCED EMO DATASET ~~~~")
