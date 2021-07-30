@@ -129,7 +129,7 @@ for k in split_keys:
     gedict[k].rename(columns={'labels': 'label'}, inplace=True)
 
 
-for k in split_keys:
-    gedict[k] = gedict[k].sample(frac=1, random_state=SEED).reset_index(drop=True)
-    gedict[k] = gedict[k][['label', 'text']]
-    gedict[k].to_csv(ROOT+"data/goemotion/"+k+'.txt', index=False, header=False, sep="\t")
+# for k in split_keys:
+#     gedict[k] = gedict[k].sample(frac=1, random_state=SEED).reset_index(drop=True)
+#     gedict[k] = gedict[k][['label', 'text']]
+#     gedict[k].to_csv(ROOT+"data/goemotion/"+k+'.txt', index=False, header=False, sep="\t")

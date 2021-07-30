@@ -16,7 +16,8 @@ from transformers import AdamW, get_scheduler
 
 NUM_LABEL = 7
 ROOT = "../"
-OUTPUTS = "../outputs/ljspeech_emotion/"
+OUTPUTS = "../outputs/blizzard_emotion/"
+fname = "blizzard_metadata.csv"
 
 device = None
 if torch.cuda.is_available():
@@ -62,7 +63,11 @@ model, optimizer = load_model_checkpoint("1626214249_final_emotion", 2, model, o
 model.to(device)
 
 
-data = read_data("lj_metadata.csv")
+data = read_data(fname)
+
+id_list = []
+text_list = []
+pred_list = []
 
 with torch.no_grad():
 	model.eval()
@@ -71,3 +76,10 @@ with torch.no_grad():
 		outputs = model(**tokenised)
 		last_hidden_state = outputs.hidden_states[-1][:,0,:]
 		np.save(OUTPUTS+str(k)+".npy", last_hidden_state.to('cpu').numpy())
+		logits = outputs.logits
+		pred_list += torch.argmax(logits, dim=-1).to('cpu').numpy().tolist()
+		text_list += [v]
+		id_list += [k]
+
+out_df = pd.DataFrame(data={"id": id_list, "text": text_list, "emotion": pred_list})
+out_df.to_csv("../outputs/"+fname.split(".")[0]+"_emotion.csv", sep="\t", index=False)

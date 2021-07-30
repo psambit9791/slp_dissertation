@@ -6,3 +6,4 @@ f0_reaper/alignment
 *.lock
 */images_depr/
 */outputs/
+DeepLearning*

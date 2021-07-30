@@ -1,0 +1,56 @@
+DISSERTATION COMMANDS ON EDDIE:
+===============================
+
+qlogin -l h_rt=01:00:00 -pe gpu-titanx 1 -l h_vmem=32G
+
+cd /exports/eddie/scratch/s1769454/
+source setup.sh
+
+BLIZZARD:
+================================
+
+./data_folder_setup.sh $BLIZZARDPATH
+
+python extract_phone_dur.py --wavsf $BLIZZARDPATH/wavs/ --labsf $BLIZZARDPATH/alignment/ --durf $BLIZZARDPATH/phone_durs/ --outf $BLIZZARDPATH/transcript.txt --outwb $BLIZZARDPATH/word_boundaries/
+
+python get_word_lengths.py $BLIZZARDPATH/word_boundaries/ $BLIZZARDPATH/word_lengths/ 
+
+python extract_feats.py --cuda --dataset-path $BLIZZARDPATH --wav-text-filelist $BLIZZARDPATH/transcript.txt --extract-mels --extract-pitch-char
+
+'''
+Traceback (most recent call last):
+  File "extract_feats.py", line 318, in <module>
+    main()
+  File "extract_feats.py", line 231, in main
+    for i, batch in enumerate(data_loader):
+  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 435, in __next__
+    data = self._next_data()
+  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 475, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "extract_feats.py", line 111, in __getitem__
+    mel_text = super(FilenamedLoader, self).__getitem__(index)
+  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/tacotron2/data_function.py", line 82, in __getitem__
+    text = self.get_text(text)
+  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/tacotron2/data_function.py", line 76, in get_text
+    text_encoded = torch.IntTensor(self.tp.encode_text(text))
+  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/common/text/text_processing.py", line 38, in encode_text
+    return [self.symbol_to_id[s] for s in text.split(' ')]
+  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/common/text/text_processing.py", line 38, in <listcomp>
+    return [self.symbol_to_id[s] for s in text.split(' ')]
+KeyError: 'sil"'
+'''
+
+LJSPEECH:
+================================
+
+./data_folder_setup.sh $LJPATH
+
+python extract_phone_dur.py --wavsf $LJPATH/wavs/ --labsf $LJPATH/alignment/ --durf $LJPATH/phone_durs/ --outf $LJPATH/transcript.txt --outwb $LJPATH/word_boundaries/
+
+python get_word_lengths.py $LJPATH/word_boundaries/ $LJPATH/word_lengths/ 
+
+python extract_feats.py --cuda --dataset-path $LJPATH --wav-text-filelist $LJPATH/transcript.txt --extract-mels --extract-pitch-char
