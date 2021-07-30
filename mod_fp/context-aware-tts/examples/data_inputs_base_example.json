@@ -1,0 +1,6 @@
+{
+  "mels": {"path": "mels/", "ext": ".pt", "dim": 80},
+  "phone_durs": {"path": "phone_durs/", "ext": ".pt", "dim": 1},
+  "pitch_phone": {"path": "pitch_phone/", "ext": ".pt", "dim": 1},
+  "output": {"path": "synth/base_500/", "ext": ".wav", "dim": null}
+}

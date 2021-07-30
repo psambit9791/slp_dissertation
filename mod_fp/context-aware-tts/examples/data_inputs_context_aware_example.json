@@ -1,0 +1,8 @@
+{
+  "mels": {"path": "mels/", "ext": ".pt", "dim": 80},
+  "phone_durs": {"path": "phone_durs/", "ext": ".pt", "dim": 1},
+  "pitch_phone": {"path": "pitch_phone/", "ext": ".pt", "dim": 1},
+  "utt_level_ctxt": {"path": "utt_ds/", "ext": ".npy", "dim": 4096},
+  "word_level_ctxt": {"path": "word_bert/", "ext": ".npy", "dim": 768},
+  "word_lengths": {"path": "word_lengths/", "ext": ".npy", "dim": 1}
+}
