@@ -17,32 +17,12 @@ python get_word_lengths.py $BLIZZARDPATH/word_boundaries/ $BLIZZARDPATH/word_len
 
 python extract_feats.py --cuda --dataset-path $BLIZZARDPATH --wav-text-filelist $BLIZZARDPATH/transcript.txt --extract-mels --extract-pitch-char
 
-'''
-Traceback (most recent call last):
-  File "extract_feats.py", line 318, in <module>
-    main()
-  File "extract_feats.py", line 231, in main
-    for i, batch in enumerate(data_loader):
-  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 435, in __next__
-    data = self._next_data()
-  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 475, in _next_data
-    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
-  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in fetch
-    data = [self.dataset[idx] for idx in possibly_batched_index]
-  File "/exports/eddie/scratch/s1769454/conda_env/envs/fp_env/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in <listcomp>
-    data = [self.dataset[idx] for idx in possibly_batched_index]
-  File "extract_feats.py", line 111, in __getitem__
-    mel_text = super(FilenamedLoader, self).__getitem__(index)
-  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/tacotron2/data_function.py", line 82, in __getitem__
-    text = self.get_text(text)
-  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/tacotron2/data_function.py", line 76, in get_text
-    text_encoded = torch.IntTensor(self.tp.encode_text(text))
-  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/common/text/text_processing.py", line 38, in encode_text
-    return [self.symbol_to_id[s] for s in text.split(' ')]
-  File "/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts/common/text/text_processing.py", line 38, in <listcomp>
-    return [self.symbol_to_id[s] for s in text.split(' ')]
-KeyError: 'sil"'
-'''
+### SENTIMENT ###
+python train.py --cuda -o ./output/ --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/sentiment_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 2 --optimizer lamb -lr 0.1 -bs 32
+
+
+### EMOTION ###
+python train.py --cuda -o ./output/ --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/emotion_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 2 --optimizer lamb -lr 0.1 -bs 32
 
 LJSPEECH:
 ================================
@@ -54,3 +34,10 @@ python extract_phone_dur.py --wavsf $LJPATH/wavs/ --labsf $LJPATH/alignment/ --d
 python get_word_lengths.py $LJPATH/word_boundaries/ $LJPATH/word_lengths/ 
 
 python extract_feats.py --cuda --dataset-path $LJPATH --wav-text-filelist $LJPATH/transcript.txt --extract-mels --extract-pitch-char
+
+
+### SENTIMENT ###
+python train.py --cuda -o ./output/ --dataset-path $LJPATH --training-files $LJPATH/filelists/train_filelist.txt --validation-files $LJPATH/filelists/val_filelist.txt --pitch-mean-std-file $LJPATH/pitch_phone_stats__transcript.json --data-inputs-file $LJPATH/sentiment_fp_data.json --model-conditions Phon-lj-ctxt-utt --epochs 2 --optimizer lamb -lr 0.1 -bs 32
+
+### EMOTION ###
+python train.py --cuda -o ./output/ --dataset-path $LJPATH --training-files $LJPATH/filelists/train_filelist.txt --validation-files $LJPATH/filelists/val_filelist.txt --pitch-mean-std-file $LJPATH/pitch_phone_stats__transcript.json --data-inputs-file $LJPATH/emotion_fp_data.json --model-conditions Phon-lj-ctxt-utt --epochs 2 --optimizer lamb -lr 0.1 -bs 32

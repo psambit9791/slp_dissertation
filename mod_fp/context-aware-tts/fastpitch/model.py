@@ -216,14 +216,15 @@ class FastPitch(nn.Module):
             # Word level context
             if 'word' in self.model_conditions:
                 word_ctxt = self.word_ctxt_prenet(word_ctxt.permute(0, 2, 1))
+                conditioning['word_ctxt'] = word_ctxt
+                conditioning['ctxt_lengths'] = ctxt_lengths
+                conditioning['word_lengths'] = word_lengths
             else:
                 word_ctxt = None
                 ctxt_lengths = None
                 word_lengths = None
 
-            conditioning['word_ctxt'] = word_ctxt
-            conditioning['ctxt_lengths'] = ctxt_lengths
-            conditioning['word_lengths'] = word_lengths
+            
             conditioning['input_lengths'] = input_lengths
 
             enc_out, enc_mask = self.encoder(inputs, conditioning=conditioning)

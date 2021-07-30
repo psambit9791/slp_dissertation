@@ -16,8 +16,8 @@ from transformers import AdamW, get_scheduler
 
 NUM_LABEL = 2
 ROOT = "../"
-OUTPUTS = "../outputs/blizzard_sentiment/"
-fname = "blizzard_metadata.csv"
+OUTPUTS = "../outputs/ljspeech_sentiment/"
+fname = "lj_metadata.csv"
 
 
 device = None
@@ -76,7 +76,7 @@ with torch.no_grad():
 		tokenised = tokenizer(v, padding="max_length", truncation=True, return_tensors="pt").to(device)
 		outputs = model(**tokenised)
 		last_hidden_state = outputs.hidden_states[-1][:,0,:]
-		np.save(OUTPUTS+str(k)+".npy", last_hidden_state.to('cpu').numpy())
+		np.save(OUTPUTS+str(k)+".npy", last_hidden_state.to('cpu').numpy().flatten())
 		logits = outputs.logits
 		pred_list += torch.argmax(logits, dim=-1).to('cpu').numpy().tolist()
 		text_list += [v]
