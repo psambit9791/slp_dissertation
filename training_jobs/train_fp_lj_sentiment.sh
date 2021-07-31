@@ -9,7 +9,7 @@
 #  (working) memory limit, the amount of memory you need may vary given your code and the amount of data
 #$ -l h_vmem=16G
 # GPU environment
-#$ -pe gpu 1
+#$ -pe gpu-titanx 1
 
 # Load Anaconda environment and modules
 . /etc/profile.d/modules.sh
@@ -23,4 +23,4 @@ LJPATH="/exports/eddie/scratch/s1769454/data/LJSpeech-1.1"
 
 # Your python commands below...
 mkdir $FPPATH/fp_lj_sentiment/
-$FPPATH/gpu_utils/submit.sh $FPPATH/train.py --cuda -o $FPPATH/fp_lj_sentiment/ --log-file $FPPATH/fp_lj_sentiment/nvlog_fp_lj_sentiment.json --dataset-path $LJPATH --training-files $LJPATH/filelists/train_filelist.txt --validation-files $LJPATH/filelists/val_filelist.txt --pitch-mean-std-file $LJPATH/pitch_phone_stats__transcript.json --data-inputs-file $LJPATH/sentiment_fp_data.json --model-conditions Phon-lj-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32
+$FPPATH/gpu_utils/submit_gpu.sh $FPPATH/train.py --cuda -o $FPPATH/fp_lj_sentiment/ --log-file $FPPATH/fp_lj_sentiment/nvlog_fp_lj_sentiment.json --dataset-path $LJPATH --training-files $LJPATH/filelists/train_filelist.txt --validation-files $LJPATH/filelists/val_filelist.txt --pitch-mean-std-file $LJPATH/pitch_phone_stats__transcript.json --data-inputs-file $LJPATH/sentiment_fp_data.json --model-conditions Phon-lj-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32

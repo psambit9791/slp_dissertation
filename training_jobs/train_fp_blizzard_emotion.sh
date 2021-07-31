@@ -9,7 +9,7 @@
 #  (working) memory limit, the amount of memory you need may vary given your code and the amount of data
 #$ -l h_vmem=16G
 # GPU environment
-#$ -pe gpu 1
+#$ -pe gpu-titanx 1
 
 # Load Anaconda environment and modules
 . /etc/profile.d/modules.sh
@@ -23,4 +23,4 @@ LJPATH="/exports/eddie/scratch/s1769454/data/LJSpeech-1.1"
 
 # Your python commands below...
 mkdir $FPPATH/fp_bl_emotion/
-$FPPATH/gpu_utils/submit.sh $FPPATH/train.py --cuda -o $FPPATH/fp_bl_emotion/ --log-file $FPPATH/fp_bl_emotion/nvlog_fp_bl_emotion.json --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/emotion_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32
+$FPPATH/gpu_utils/submit_gpu.sh $FPPATH/train.py --cuda -o $FPPATH/fp_bl_emotion/ --log-file $FPPATH/fp_bl_emotion/nvlog_fp_bl_emotion.json --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/emotion_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32
