@@ -23,4 +23,4 @@ LJPATH="/exports/eddie/scratch/s1769454/data/LJSpeech-1.1"
 
 # Your python commands below...
 mkdir $FPPATH/fp_bl_emotion/
-python $FPPATH/train.py --cuda -o $FPPATH/fp_bl_emotion/ --log-file $FPPATH/fp_bl_emotion/nvlog_fp_bl_emotion.json --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/emotion_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32
+$FPPATH/gpu_utils/submit.sh $FPPATH/train.py --cuda -o $FPPATH/fp_bl_emotion/ --log-file $FPPATH/fp_bl_emotion/nvlog_fp_bl_emotion.json --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/emotion_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32
