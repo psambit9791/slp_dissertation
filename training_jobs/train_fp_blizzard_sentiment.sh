@@ -22,4 +22,5 @@ BLIZZARDPATH="/exports/eddie/scratch/s1769454/data/Blizzard-2018"
 LJPATH="/exports/eddie/scratch/s1769454/data/LJSpeech-1.1"
 
 # Your python commands below...
-python $FPPATH/train.py --cuda -o $FPPATH/fp_bl_sentiment/ --log-file $FPPATH/output/nvlog_fp_bl_sentiment.json --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/sentiment_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32
+mkfir $FPPATH/fp_bl_sentiment/
+python $FPPATH/train.py --cuda -o $FPPATH/fp_bl_sentiment/ --log-file $FPPATH/fp_bl_sentiment/nvlog_fp_bl_sentiment.json --dataset-path $BLIZZARDPATH --training-files $BLIZZARDPATH/filelists/train_filelist.txt --validation-files $BLIZZARDPATH/filelists/val_filelist.txt --pitch-mean-std-file $BLIZZARDPATH/pitch_phone_stats__transcript.json --data-inputs-file $BLIZZARDPATH/sentiment_fp_data.json --model-conditions Phon-blizzard-ctxt-utt --epochs 500 --optimizer lamb -lr 0.1 -bs 32
