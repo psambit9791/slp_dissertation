@@ -16,9 +16,6 @@
 module load anaconda
 source activate fp_venv
 module load cuda/11.0.2
-FPPATH="/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts"
-BLIZZARDPATH="/exports/eddie/scratch/s1769454/data/Blizzard-2018"
-LJPATH="/exports/eddie/scratch/s1769454/data/LJSpeech-1.1"
 
 
 # Your python commands below...

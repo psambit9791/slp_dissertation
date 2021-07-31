@@ -17,6 +17,10 @@ export OMP_NUM_THREADS=1
 GBS=$(($NUM_GPUS * $BS * $GRAD_ACCUMULATION))
 [ $GBS -ne 256 ] && echo -e "\nWARNING: Global batch size changed from 256 to ${GBS}.\n"
 
+FPPATH="/exports/eddie/scratch/s1769454/slp_dissertation/mod_fp/context-aware-tts"
+BLIZZARDPATH="/exports/eddie/scratch/s1769454/data/Blizzard-2018"
+LJPATH="/exports/eddie/scratch/s1769454/data/LJSpeech-1.1"
+
 echo -e "\nSetup: ${NUM_GPUS}x${BS}x${GRAD_ACCUMULATION} - global batch size ${GBS}\n"
 
 gpu_id=$(python $FPPATH/gpu_utils/gpu_lock.py --id-to-hog)
