@@ -54,6 +54,7 @@ import data_functions
 import loss_functions
 import models
 
+NUM_WORKERS = 2
 
 def parse_args(parser):
     """
@@ -227,7 +228,7 @@ def validate(model, epoch, total_iter, criterion, valset, batch_size,
     tik = time.perf_counter()
     with torch.no_grad():
         val_sampler = DistributedSampler(valset) if distributed_run else None
-        val_loader = DataLoader(valset, num_workers=8, shuffle=False,
+        val_loader = DataLoader(valset, num_workers=NUM_WORKERS, shuffle=False,
                                 sampler=val_sampler,
                                 batch_size=batch_size, pin_memory=False,
                                 collate_fn=collate_fn)
@@ -390,7 +391,7 @@ def main():
     else:
         train_sampler, shuffle = None, True
 
-    train_loader = DataLoader(trainset, num_workers=16, shuffle=shuffle,
+    train_loader = DataLoader(trainset, num_workers=NUM_WORKERS, shuffle=shuffle,
                               sampler=train_sampler, batch_size=args.batch_size,
                               pin_memory=False, drop_last=True,
                               collate_fn=collate_fn)
