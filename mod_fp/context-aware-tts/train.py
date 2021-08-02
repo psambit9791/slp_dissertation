@@ -54,7 +54,7 @@ import data_functions
 import loss_functions
 import models
 
-NUM_WORKERS = 2
+NUM_WORKERS = 1
 
 def parse_args(parser):
     """
