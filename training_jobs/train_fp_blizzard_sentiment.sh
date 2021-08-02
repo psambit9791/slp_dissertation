@@ -5,8 +5,8 @@
 #$ -l h_rt=48:00:00
 #$ -l h_vmem=50G
 #$ -pe gpu-titanx 1
-#$ -o /exports/eddie/scratch/s1769454/train_log/fastpitch_train.stdout
-#$ -e /exports/eddie/scratch/s1769454/train_log/fastpitch_train.stderr
+#$ -o /exports/eddie/scratch/s1769454/train_log/fastpitch_train_fp_bl_sent.stdout
+#$ -e /exports/eddie/scratch/s1769454/train_log/fastpitch_train_fp_bl_sent.stderr
 #$ -M s1769454@ed.ac.uk
 #$ -m beas
 #
