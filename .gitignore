@@ -8,3 +8,15 @@ f0_reaper/alignment
 */outputs/
 DeepLearning*
 emotion_bert/outputs_previous.tar.xz
+
+__pycache__/
+
+mod_fp/context-aware-tts/fp_bl_emotion/
+mod_fp/context-aware-tts/fp_bl_sentiment/
+mod_fp/context-aware-tts/fp_lj_emotion/
+mod_fp/context-aware-tts/fp_lj_sentiment/
+
+mod_fp/context-aware-tts/fp_bl_emotion_completed/
+mod_fp/context-aware-tts/fp_bl_sentiment_completed/
+mod_fp/context-aware-tts/fp_lj_emotion_completed/
+mod_fp/context-aware-tts/fp_lj_sentiment_completed/

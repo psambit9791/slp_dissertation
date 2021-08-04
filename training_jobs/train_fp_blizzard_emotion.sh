@@ -3,7 +3,7 @@
 # grid engine options
 #$ -cwd
 #$ -l h_rt=48:00:00
-#$ -l h_vmem=120G
+#$ -l h_vmem=62G
 #$ -pe gpu-titanx 1
 #$ -o /exports/eddie/scratch/s1769454/train_log/fastpitch_train_fp_bl_emo.stdout
 #$ -e /exports/eddie/scratch/s1769454/train_log/fastpitch_train_fp_bl_emo.stderr
