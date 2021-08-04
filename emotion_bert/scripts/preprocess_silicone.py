@@ -68,7 +68,7 @@ def plot_data_distribution(data_dict, label_var, filename=None, mapper=emo_map):
     
     if filename is not None:
         plt.tight_layout()
-        plt.savefig(ROOT+"images/"+filename+".png")
+        plt.savefig(ROOT+"images/"+filename+".pdf")
         plt.clf()
     else:
         plt.show()
@@ -251,7 +251,11 @@ label_list = merged_data["train"]["label"].unique()
 # print(merged_data["test"])
 merged_counts = plot_data_distribution(merged_data, 'label', 'unbalanced_silicone')
 
-print("TOTAL SENTENCES AFTER MERGING:\n", merged_counts)
+print("TOTAL SENTENCES AFTER MERGING:\n")
+
+print("TRAINING: ", np.sum(list(merged_counts['train'].values())))
+print("VALIDATION: ", np.sum(list(merged_counts['validation'].values())))
+print("TEST: ", np.sum(list(merged_counts['test'].values())))
 
 TOTAL_TRAIN_SENTENCES = MAX_SENTENCES
 TOTAL_VAL_SENTENCES = int(TOTAL_TRAIN_SENTENCES/merged_val_ratio)
@@ -306,7 +310,7 @@ plot_data_distribution(balanced_data, 'label', 'balanced_silicone', final_emo_lb
 for k in split_keys:
     balanced_data[k] = balanced_data[k].sample(frac=1, random_state=SEED).reset_index(drop=True)
     balanced_data[k] = balanced_data[k][['label', 'text']]
-    balanced_data[k].to_csv(ROOT+"data/balanced_emotion/"+k+'.txt', index=False, header=False, sep="\t")
+    # balanced_data[k].to_csv(ROOT+"data/balanced_emotion/"+k+'.txt', index=False, header=False, sep="\t")
 
 print("~~~~ GENERATED BALANCED EMO DATASET ~~~~")
 print("Training Sentences: ", sum(list(train_sent_count.values())))

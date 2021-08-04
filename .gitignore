@@ -8,6 +8,7 @@ f0_reaper/alignment
 */outputs/
 DeepLearning*
 emotion_bert/outputs_previous.tar.xz
+images*/
 
 __pycache__/
 
